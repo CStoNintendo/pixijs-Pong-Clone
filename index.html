@@ -13,15 +13,20 @@
     
     let type = "WebGL"
     let gameState;
-    let playerPaddle;
-    let enemyPaddle;
-    let ball;
+    let playerPaddle, playerPaddleSpeed, playerPaddleHeight;
+    let enemyPaddle, enemyPaddleSpeed, enemyPaddleHeight,
+      enemyPaddleMiddle;
+    let ball, ballSpeed, ballDiam, ballTop, ballBot, ballLeft,
+      ballRight;
+    let paddleWidth;
+
+    let baby = 1, easy = 2, medium = 3, hard = 4,
+      impossible = 5;
+    //For MVP, defaulting difficulty to medium
+    let difficulty = medium;
 
     let winWidth = window.innerWidth;
     let winHeight = window.innerHeight;
-    let paddleLength = winHeight / 6;
-    let paddleWidth = winWidth / 150;
-    let ballDiam = winWidth / 150;
 
     let defaultColor = 0xFFFFFF;
     let keyUp = keyboard(38),
@@ -49,32 +54,71 @@
     app.renderer.autoDensity = true;
     app.renderer.resize(window.innerWidth, window.innerHeight);
     document.body.appendChild(app.view);
+
+    initialSetup();
     setup();
-    
-    function setup() {
-      
+
+
+    function initialSetup() {
       playerPaddle = new PIXI.Graphics();
       playerPaddle.beginFill(defaultColor);
       playerPaddle.lineStyle(1, defaultColor);
-      playerPaddle.drawRect(winWidth/6, winHeight/2, paddleWidth, paddleLength);
       playerPaddle.vy = 0;
-      app.stage.addChild(playerPaddle);
 
       enemyPaddle = new PIXI.Graphics();
       enemyPaddle.beginFill(defaultColor);
       enemyPaddle.lineStyle(1, defaultColor);
-      enemyPaddle.drawRect(winWidth*.8333, winHeight/2, paddleWidth, paddleLength);
       enemyPaddle.vy = 0;
-      app.stage.addChild(enemyPaddle);
 
       ball = new PIXI.Graphics();
       ball.beginFill(defaultColor);
+
+      //TODO SET THESE VALUES FOR DIFFICULTY
+      ball.vy = 0;
+      ball.vx = 0;
+      paddleWidth = winWidth / 150;
+      ballDiam = winWidth / 150;
+
+      // Sets up the difficulty of the 
+      switch(difficulty) {
+        case baby:
+          //TODO MAKE UBER EASY
+          break;
+
+        case easy:
+          //MAKE PRETTY EASY
+          break;
+
+        case medium:
+          
+          playerPaddleHeight = enemyPaddleHeight = winHeight / 6;
+          playerPaddleSpeed = enemyPaddleSpeed = winHeight / 75;
+          
+
+          break;
+
+        case hard:
+          //MAKE PRETTY TOUGH
+          break;
+
+        case impossible:
+          //MAKE IMPOSSIBLE
+          break;
+
+      }
+      playerPaddle.drawRect(winWidth/6, winHeight/2, paddleWidth, playerPaddleHeight);
+      enemyPaddle.drawRect(winWidth*.8333, winHeight/2, paddleWidth, enemyPaddleHeight);
       ball.drawCircle(winWidth/2, winHeight/2, ballDiam);
-      ball.endFill();
+
+      app.stage.addChild(playerPaddle);
+      app.stage.addChild(enemyPaddle);
       app.stage.addChild(ball);
+    }
+    
+    function setup() {
 
       keyDown.press = () => {
-        playerPaddle.vy = 5;
+        playerPaddle.vy = playerPaddleSpeed;
       };
 
       keyDown.release = () => {
@@ -84,7 +128,7 @@
       };
 
       keyUp.press = () => {
-        playerPaddle.vy = -5;
+        playerPaddle.vy = -(playerPaddleSpeed);
       };
 
       keyUp.release = () => {
@@ -105,6 +149,11 @@
     function play(delta) {
       playerPaddle.y += playerPaddle.vy;
     }
+
+    function regenerateBall() {
+      //TODO CREATE FUNCTIONS
+    }
+
     //Identifies the buttons users are pressing on the keyboard.
     function keyboard(keyCode) {
       let key = {};
