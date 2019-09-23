@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style>* {padding: 0; margin: 0}</style>
+  <title>Pong-Clone</title>
+</head>
+<script src="assets/js/pixi.min.js"></script>
+<body>
+  <script type="text/javascript">
+    
+    let type = "WebGL"
+    let gameState;
+    let playerPaddle;
+    let enemyPaddle;
+    let ball;
+
+    let winWidth = window.innerWidth;
+    let winHeight = window.innerHeight;
+    let paddleLength = winHeight / 6;
+    let paddleWidth = winWidth / 150;
+    let ballDiam = winWidth / 150;
+
+    let defaultColor = 0xFFFFFF;
+    let keyUp = keyboard(38),
+        keyDown = keyboard(40);
+
+    if(!PIXI.utils.isWebGLSupported()){
+      type = "canvas"
+    }
+    //Aliases
+    let Application = PIXI.Application,
+      loader = PIXI.Loader.shared,
+      Sprite = PIXI.Sprite;
+
+    //Create a Pixi Application
+    let app = new Application({ 
+      width: 360,        
+      height: 240,        
+      antialias: true,    
+      transparent: false, 
+      resolution: 1       
+      }
+    );
+    app.renderer.view.style.position = "absolute";
+    app.renderer.view.style.display = "block";
+    app.renderer.autoDensity = true;
+    app.renderer.resize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(app.view);
+    setup();
+    
+    function setup() {
+      
+      playerPaddle = new PIXI.Graphics();
+      playerPaddle.beginFill(defaultColor);
+      playerPaddle.lineStyle(1, defaultColor);
+      playerPaddle.drawRect(winWidth/6, winHeight/2, paddleWidth, paddleLength);
+      playerPaddle.vy = 0;
+      app.stage.addChild(playerPaddle);
+
+      enemyPaddle = new PIXI.Graphics();
+      enemyPaddle.beginFill(defaultColor);
+      enemyPaddle.lineStyle(1, defaultColor);
+      enemyPaddle.drawRect(winWidth*.8333, winHeight/2, paddleWidth, paddleLength);
+      enemyPaddle.vy = 0;
+      app.stage.addChild(enemyPaddle);
+
+      ball = new PIXI.Graphics();
+      ball.beginFill(defaultColor);
+      ball.drawCircle(winWidth/2, winHeight/2, ballDiam);
+      ball.endFill();
+      app.stage.addChild(ball);
+
+      keyDown.press = () => {
+        playerPaddle.vy = 5;
+      };
+
+      keyDown.release = () => {
+        if(!keyUp.isDown) {
+          playerPaddle.vy = 0;
+        }
+      };
+
+      keyUp.press = () => {
+        playerPaddle.vy = -5;
+      };
+
+      keyUp.release = () => {
+        if(!keyDown.isDown) {
+          playerPaddle.vy = 0;
+        }
+      };
+
+      gameState = play;
+
+      app.ticker.add(delta => gameLoop(delta));
+    }
+
+    function gameLoop(delta) {
+      gameState(delta);
+    }
+
+    function play(delta) {
+      playerPaddle.y += playerPaddle.vy;
+    }
+    //Identifies the buttons users are pressing on the keyboard.
+    function keyboard(keyCode) {
+      let key = {};
+      key.code = keyCode;
+      key.isDown = false;
+      key.isUp = true;
+      key.press = undefined;
+      key.release = undefined;
+      //The `downHandler`
+      key.downHandler = event => {
+        if (event.keyCode === key.code) {
+          if (key.isUp && key.press) key.press();
+            key.isDown = true;
+            key.isUp = false;
+        }
+        event.preventDefault();
+      };
+      //The `upHandler`
+      key.upHandler = event => {
+        if (event.keyCode === key.code) {
+            if (key.isDown && key.release) key.release();
+            key.isDown = false;
+            key.isUp = true;
+        }
+        event.preventDefault();
+      };
+      //Attach event listeners
+      window.addEventListener(
+      "keydown", key.downHandler.bind(key), false
+      );
+      window.addEventListener(
+        "keyup", key.upHandler.bind(key), false
+      );
+      return key;
+}
+
+  </script>
+</body>
+</html>
