@@ -18,7 +18,7 @@
     let playerPaddle, playerPaddleSpeed, playerPaddleHeight;
     let enemyPaddle, enemyPaddleSpeed, enemyPaddleHeight,
       enemyPaddleMiddle;
-    let ball, ballSpeed, ballDiam, ballTop, ballBot, ballLeft,
+    let ball, ballSpeedX, ballSpeedY, ballDiam, ballTop, ballBot, ballLeft,
       ballRight;
     let playerTextScore, enemyTextScore, fontStyle;
     let paddleWidth;
@@ -110,7 +110,10 @@
           
           playerPaddleHeight = enemyPaddleHeight = winHeight / 6;
           playerPaddleSpeed = enemyPaddleSpeed = winHeight / 75;
-          ballSpeed = winHeight / 150;
+          let neg = generateNegative();
+          ballSpeedX = (winHeight / 150) * (neg);
+          neg = generateNegative();
+          ballSpeedY = ballSpeedX * neg;
 
           break;
 
@@ -178,6 +181,12 @@
     function updateScores() {
       playerTextScore.text = playerScore;
       enemyTextScore.text = enemyScore;
+      if(playerScore == 9) {
+        alert("You have won the gane!!");
+      }
+      else if(enemyScore == 9) {
+        alert("You lost....");
+      }
     }
 
     function movePlayer() {
@@ -194,8 +203,18 @@
     }
 
     function checkBallCollisions() {
-      ball.vy = ballSpeed;
-      ball.vx = ballSpeed;
+      ball.vy = ballSpeedY;
+      ball.vx = ballSpeedX;
+    }
+
+    function generateNegative() {
+      let result = Math.floor(Math.random() * (1 + 1));
+      if(result == 0) {
+        return -1;
+      }
+      else {
+        return 1;
+      }
     }
 
     //Identifies the buttons users are pressing on the keyboard.
