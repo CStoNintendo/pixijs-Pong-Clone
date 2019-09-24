@@ -13,11 +13,14 @@
     
     let type = "WebGL"
     let gameState;
+
+    let playerScore, enemyScore;
     let playerPaddle, playerPaddleSpeed, playerPaddleHeight;
     let enemyPaddle, enemyPaddleSpeed, enemyPaddleHeight,
       enemyPaddleMiddle;
     let ball, ballSpeed, ballDiam, ballTop, ballBot, ballLeft,
       ballRight;
+    let playerTextScore, enemyTextScore, fontStyle;
     let paddleWidth;
 
     let baby = 1, easy = 2, medium = 3, hard = 4,
@@ -49,6 +52,15 @@
       resolution: 1       
       }
     );
+
+    let fontSize = winWidth / 20;
+
+
+    fontStyle = new PIXI.TextStyle({
+      fontSize: fontSize,
+      fill: "white",
+    });
+
     app.renderer.view.style.position = "absolute";
     app.renderer.view.style.display = "block";
     app.renderer.autoDensity = true;
@@ -56,10 +68,11 @@
     document.body.appendChild(app.view);
 
     initialSetup();
-    setup();
 
 
     function initialSetup() {
+      playerScore = enemyScore = 0;
+
       playerPaddle = new PIXI.Graphics();
       playerPaddle.beginFill(defaultColor);
       playerPaddle.lineStyle(1, defaultColor);
@@ -73,13 +86,17 @@
       ball = new PIXI.Graphics();
       ball.beginFill(defaultColor);
 
+      playerTextScore = new PIXI.Text(playerScore, fontStyle);
+      enemyTextScore = new PIXI.Text(enemyScore, fontStyle);
+
+
       //TODO SET THESE VALUES FOR DIFFICULTY
       ball.vy = 0;
       ball.vx = 0;
       paddleWidth = winWidth / 150;
       ballDiam = winWidth / 150;
 
-      // Sets up the difficulty of the 
+      // Sets up the difficulty of the game.
       switch(difficulty) {
         case baby:
           //TODO MAKE UBER EASY
@@ -113,9 +130,9 @@
       app.stage.addChild(playerPaddle);
       app.stage.addChild(enemyPaddle);
       app.stage.addChild(ball);
-    }
-    
-    function setup() {
+      app.stage.addChild(playerTextScore);
+      app.stage.addChild(enemyTextScore);
+      enemyTextScore.position.set(winWidth - fontSize,0);
 
       keyDown.press = () => {
         playerPaddle.vy = playerPaddleSpeed;
@@ -147,11 +164,31 @@
     }
 
     function play(delta) {
-      playerPaddle.y += playerPaddle.vy;
+      updateScores();
+      checkBallCollisions();
+      moveEnemy();
+      movePlayer();
     }
 
     function regenerateBall() {
       //TODO CREATE FUNCTIONS
+    }
+
+    function updateScores() {
+      playerTextScore.text = playerScore;
+      enemyTextScore.text = enemyScore;
+    }
+
+    function movePlayer() {
+      playerPaddle.y += playerPaddle.vy;
+    }
+
+    function moveEnemy() {
+
+    }
+
+    function checkBallCollisions() {
+
     }
 
     //Identifies the buttons users are pressing on the keyboard.
