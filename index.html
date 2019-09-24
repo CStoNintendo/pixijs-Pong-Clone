@@ -110,7 +110,7 @@
           
           playerPaddleHeight = enemyPaddleHeight = winHeight / 6;
           playerPaddleSpeed = enemyPaddleSpeed = winHeight / 75;
-          
+          ballSpeed = winHeight / 150;
 
           break;
 
@@ -166,6 +166,7 @@
     function play(delta) {
       updateScores();
       checkBallCollisions();
+      moveBall();
       moveEnemy();
       movePlayer();
     }
@@ -183,12 +184,18 @@
       playerPaddle.y += playerPaddle.vy;
     }
 
+    function moveBall() {
+      ball.y += ball.vy;
+      ball.x += ball.vx;
+    }
+
     function moveEnemy() {
 
     }
 
     function checkBallCollisions() {
-
+      ball.vy = ballSpeed;
+      ball.vx = ballSpeed;
     }
 
     //Identifies the buttons users are pressing on the keyboard.
