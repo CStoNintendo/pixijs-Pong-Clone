@@ -69,7 +69,10 @@
 
     initialSetup();
 
-
+    /**
+     * This provides all of the setup of the game and then forces itself
+     * into the gameloop, where it will stay until the end.
+     **/
     function initialSetup() {
       playerScore = enemyScore = 0;
 
@@ -148,7 +151,7 @@
       };
 
       keyUp.press = () => {
-        playerPaddle.vy = -(playerPaddleSpeed);
+          playerPaddle.vy = -(playerPaddleSpeed);
       };
 
       keyUp.release = () => {
@@ -166,6 +169,12 @@
       gameState(delta);
     }
 
+
+    /**
+     * This is the main Game Loop of the program,
+     * all logic in here is repeated over and over again
+     * 60 times every second.
+     **/
     function play(delta) {
       updateScores();
       checkBallCollisions();
@@ -174,10 +183,20 @@
       movePlayer();
     }
 
+    /**
+     * This function will regenerate the ball in the center
+     * of the screen after either the enemy or player scores.
+     **/
     function regenerateBall() {
       //TODO CREATE FUNCTIONS
     }
 
+    /**
+     * This function does not increment the scores of the players,
+     * but actually just assigns the text value of each score to the
+     * stored integer value. It is ran with the game loop, and will
+     * update based off of when a paddle scores.
+     **/
     function updateScores() {
       playerTextScore.text = playerScore;
       enemyTextScore.text = enemyScore;
@@ -185,28 +204,73 @@
         alert("You have won the gane!!");
       }
       else if(enemyScore == 9) {
-        alert("You lost....");
+        alert("You lost....the game....");
       }
     }
 
+    /**
+     * This function is called in the Game Loop, it allows the User
+     * to move the player while also forcing the Player's Paddle to
+     * stay in bounds.
+     **/
     function movePlayer() {
-      playerPaddle.y += playerPaddle.vy;
+      // If the paddle is too high, it cannot move.
+      if(playerPaddle.getBounds().y <= 0 && keyUp.isDown) {
+        playerPaddle.y += 0;
+      }
+      // If the paddle is too low, it cannot move.
+      else if((playerPaddle.getBounds().y + playerPaddleHeight) >= winHeight && keyDown.isDown) {
+        playerPaddle.y += 0;
+      }
+      else {
+        playerPaddle.y += playerPaddle.vy;
+      }
     }
 
+    /**
+     * Another Game Loop function that tells the ball
+     * to keep moving in the direction you are told.
+     **/
     function moveBall() {
       ball.y += ball.vy;
       ball.x += ball.vx;
     }
 
+    /**
+     * The movement of the enemy will be
+     * completely dependent on how the game difficulty is set.
+     * Specifics about each difficulty will be commented below.
+     **/
     function moveEnemy() {
-
+      
+      switch(difficulty) {
+        case baby:
+          break;
+        case easy:
+          break;
+        case medium:
+          break;
+        case hard:
+          break;
+        case impossible:
+          break;
+        }
     }
 
+    /**
+     * This method is ran in the game loop and will change
+     * the ball's velocity depending on if any collisions are detected
+     **/
     function checkBallCollisions() {
       ball.vy = ballSpeedY;
       ball.vx = ballSpeedX;
     }
 
+    /**
+     * This function is called at the beginning of the
+     * game and determines what direction the ball will begin
+     * travelling. It randomizes it for each run.
+     **/
     function generateNegative() {
       let result = Math.floor(Math.random() * (1 + 1));
       if(result == 0) {
@@ -217,6 +281,10 @@
       }
     }
 
+    /**
+     * This keyboard function was taken from the PIXIjs tutorial,
+     * I did not write it, but it is very good.
+     **/
     //Identifies the buttons users are pressing on the keyboard.
     function keyboard(keyCode) {
       let key = {};
