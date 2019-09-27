@@ -10,7 +10,9 @@
 <script src="assets/js/pixi.min.js"></script>
 <body>
   <script type="text/javascript">
-    
+    /**
+     * All the variables needed for the game.
+     **/
     let type = "WebGL"
     let gameState;
 
@@ -129,10 +131,12 @@
           break;
 
       }
-      playerPaddle.drawRect(winWidth/6, winHeight/2, paddleWidth, playerPaddleHeight);
+      // Creates the polygons with the dimensions specified in Difficulty.
+      playerPaddle.drawRect(winWidth/8, winHeight/2, paddleWidth, playerPaddleHeight);
       enemyPaddle.drawRect(winWidth*.8333, winHeight/2, paddleWidth, enemyPaddleHeight);
       ball.drawCircle(winWidth/2, winHeight/2, ballDiam);
 
+      // Draws the polygons onto the screen.
       app.stage.addChild(playerPaddle);
       app.stage.addChild(enemyPaddle);
       app.stage.addChild(ball);
@@ -262,8 +266,62 @@
      * the ball's velocity depending on if any collisions are detected
      **/
     function checkBallCollisions() {
+
+      let ballBoundsY = ball.getBounds().y;
+      
+      //Checks for top and bottom collisions.
+      if(ballBoundsY <= 0 || ballBoundsY + ball.height >= winHeight) {
+        ballSpeedY = -(ballSpeedY);
+      }
+      //This will check for paddle collisions.
+      if(isBallPlayerColl() || isBallEnemyColl()) {
+        ballSpeedX = -(ballSpeedX);
+      }
       ball.vy = ballSpeedY;
       ball.vx = ballSpeedX;
+    }
+
+    /**
+     * This function will see if the ball collides with
+     * the player's paddle
+     **/
+    function isBallPlayerColl() {
+      let upperPaddle = playerPaddle.getBounds().y;
+      let lowerPaddle = upperPaddle + playerPaddle.height;
+      let paddleEdge = playerPaddle.getBounds().x + playerPaddle.width;
+      let ballBoundsTop = ball.getBounds().y;
+      let ballBoundsBot = ballBoundsTop + ball.height;
+      
+      if(ballBoundsBot > upperPaddle && ballBoundsTop < lowerPaddle) {
+        if(ball.getBounds().x <= paddleEdge) {
+          return true;
+        }
+      }
+      else{
+        return false;
+      }
+    }
+
+    /**
+     * This function will see if the ball collides with
+     * the enemy's paddle
+     **/
+    function isBallEnemyColl() {
+      let upperPaddle = enemyPaddle.getBounds().y;
+      let lowerPaddle = upperPaddle + enemyPaddle.height;
+      let paddleEdge = enemyPaddle.getBounds().x + enemyPaddle.width;
+      let ballBoundsTop = ball.getBounds().y;
+      let ballBoundsBot = ballBoundsTop + ball.height;
+      let ballBoundsSide = ball.getBounds().x + ball.width;
+      
+      if(ballBoundsBot > upperPaddle && ballBoundsTop < lowerPaddle) {
+        if(ballBoundsSide >= paddleEdge) {
+          return true;
+        }
+      }
+      else{
+        return false;
+      }
     }
 
     /**
@@ -272,8 +330,9 @@
      * travelling. It randomizes it for each run.
      **/
     function generateNegative() {
-      let result = Math.floor(Math.random() * (1 + 1));
-      if(result == 0) {
+      // Generates a number between 0.0 and 1.0
+      let result = Math.random();
+      if(result < 0.5) {
         return -1;
       }
       else {
