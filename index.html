@@ -115,10 +115,8 @@
           
           playerPaddleHeight = enemyPaddleHeight = winHeight / 6;
           playerPaddleSpeed = enemyPaddleSpeed = winHeight / 75;
-          let neg = generateNegative();
-          ballSpeedX = (winHeight / 150) * (neg);
-          neg = generateNegative();
-          ballSpeedY = ballSpeedX * neg;
+          ballSpeedX = (winHeight / 150) * generateNegative();
+          ballSpeedY = ballSpeedX * generateNegative();
 
           break;
 
@@ -192,7 +190,31 @@
      * of the screen after either the enemy or player scores.
      **/
     function regenerateBall() {
-      //TODO CREATE FUNCTIONS
+
+      ball = new PIXI.Graphics();
+      ball.beginFill(defaultColor);
+
+      switch(difficulty) {
+        
+        case baby:
+          break;
+        case easy:
+          break;
+
+        case medium:
+
+          ball.drawCircle(winWidth/2, winHeight/2, ballDiam);
+          ballSpeedX = (winHeight / 150) * generateNegative();
+          ballSpeedY = ballSpeedX * generateNegative();
+          break;
+
+        case hard:
+          break;
+        case impossible:
+          break;
+      }
+
+      app.stage.addChild(ball);
     }
 
     /**
@@ -206,9 +228,13 @@
       enemyTextScore.text = enemyScore;
       if(playerScore == 9) {
         alert("You have won the gane!!");
+        alert("Please reload the page to play again.");
+        gameState = end;
       }
       else if(enemyScore == 9) {
         alert("You lost....the game....");
+        alert("Please reload the page to play again.")
+        gameState = end;
       }
     }
 
@@ -238,6 +264,16 @@
     function moveBall() {
       ball.y += ball.vy;
       ball.x += ball.vx;
+      if(ball.getBounds().x + ball.width < 0 - (winWidth / 6)) {
+        enemyScore++;
+        ball.destroy();
+        regenerateBall();
+      }
+      if(ball.getBounds().x > winWidth + (winWidth / 6)) {
+        playerScore++;
+        ball.destroy();
+        regenerateBall();
+      }
     }
 
     /**
@@ -292,8 +328,8 @@
       let ballBoundsTop = ball.getBounds().y;
       let ballBoundsBot = ballBoundsTop + ball.height;
       
-      if(ballBoundsBot > upperPaddle && ballBoundsTop < lowerPaddle) {
-        if(ball.getBounds().x <= paddleEdge) {
+      if(ballBoundsBot >= upperPaddle && ballBoundsTop <= lowerPaddle) {
+        if(ball.getBounds().x <= paddleEdge && ball.getBounds().x >= playerPaddle.getBounds().x) {
           return true;
         }
       }
@@ -314,8 +350,8 @@
       let ballBoundsBot = ballBoundsTop + ball.height;
       let ballBoundsSide = ball.getBounds().x + ball.width;
       
-      if(ballBoundsBot > upperPaddle && ballBoundsTop < lowerPaddle) {
-        if(ballBoundsSide >= paddleEdge) {
+      if(ballBoundsBot >= upperPaddle && ballBoundsTop <= lowerPaddle) {
+        if(ballBoundsSide >= enemyPaddle.getBounds().x && ballBoundsSide <= paddleEdge) {
           return true;
         }
       }
