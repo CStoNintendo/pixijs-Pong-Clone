@@ -114,7 +114,8 @@
         case medium:
           
           playerPaddleHeight = enemyPaddleHeight = winHeight / 6;
-          playerPaddleSpeed = enemyPaddleSpeed = winHeight / 75;
+          playerPaddleSpeed = winHeight / 75;
+          enemyPaddleSpeed = winHeight / 225;
           ballSpeedX = (winHeight / 150) * generateNegative();
           ballSpeedY = ballSpeedX * generateNegative();
 
@@ -227,7 +228,7 @@
       playerTextScore.text = playerScore;
       enemyTextScore.text = enemyScore;
       if(playerScore == 9) {
-        alert("You have won the gane!!");
+        alert("You have won the game!!");
         alert("Please reload the page to play again.");
         gameState = end;
       }
@@ -282,13 +283,26 @@
      * Specifics about each difficulty will be commented below.
      **/
     function moveEnemy() {
-      
+
+      let midEnemyPaddle = enemyPaddle.getBounds().y + (enemyPaddle.height / 2);
+      let ballMiddle = ball.getBounds().y + (ball.height / 2);
       switch(difficulty) {
         case baby:
           break;
         case easy:
           break;
         case medium:
+
+          if(ball.getBounds().x >= winWidth / 2 && ball.getBounds().x <= enemyPaddle.getBounds().x) {
+            //Three Case if statement that will determine whether or not the enemy
+            //paddles moves up, down or stays still.
+            if(midEnemyPaddle < ballMiddle) {
+              enemyPaddle.y += enemyPaddleSpeed;
+            }
+            else if (midEnemyPaddle > ballMiddle) {
+              enemyPaddle.y += -enemyPaddleSpeed;
+            }
+          }
           break;
         case hard:
           break;
